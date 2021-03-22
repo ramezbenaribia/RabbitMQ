@@ -4,35 +4,46 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class UserReceiver {
-    public final static String QUEUE_NAME1="user1";
-    public final static String QUEUE_NAME2="user2";
-    public final static String QUEUE_NAME3="user3";
-    static JLabel userLabel1, userLabel2, userLabel3;
-    public static void main(String[] args) throws IOException, TimeoutException {
-        receive();
-    }
+    public final static String QUEUE_NAME="test-exchange";
 
-    static void receive() throws IOException, TimeoutException {
-        JFrame f= new JFrame("Responses");
-
-        userLabel1=new JLabel("User 1: ");
-        userLabel1.setBounds(50,50, 300,30);
-        f.add(userLabel1);
-
-        userLabel2=new JLabel("User 2: ");
-        userLabel2.setBounds(50,100, 300,30);
-        f.add(userLabel2);
+      UserReceiver() throws IOException, TimeoutException {
+        JPanel jPanel = new JPanel();
+        jPanel.setBorder(new TitledBorder(new EtchedBorder(), "Receiver"));
+        jPanel.setBounds(10,30,800,600);
+        JFrame f= new JFrame("Final Text");
 
 
-        userLabel3=new JLabel("User 3: ");
-        userLabel3.setBounds(50,150, 300,30);
-        f.add(userLabel3);
 
-        f.setSize(500,500);
+        JTextArea area=new JTextArea(20,20);
+        Font fieldFont = new Font("Arial", Font.PLAIN, 20);
+        area.setFont(fieldFont);
+        area.setBorder(BorderFactory.createCompoundBorder(
+                new CustomeBorder(),
+                new EmptyBorder(new Insets(15, 25, 15, 25))));
+        area.setForeground(Color.red);
+
+        area.setEditable(false);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+
+
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setBounds(10, 265, 455, 249);
+
+        jPanel.add(scroll);
+
+
+        f.add(jPanel);
+        f.setSize(830,670);
         f.setLayout(null);
         f.setVisible(true);
 
@@ -42,42 +53,17 @@ public class UserReceiver {
 
         Connection connection = connectionFactory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare(QUEUE_NAME1,false,false,false,null);
+        channel.queueDeclare(QUEUE_NAME,false,false,false,null);
 
-
-        Connection connection2 = connectionFactory.newConnection();
-        Channel channel2 = connection2.createChannel();
-        channel2.queueDeclare(QUEUE_NAME2,false,false,false,null);
-
-        Connection connection3 = connectionFactory.newConnection();
-        Channel channel3 = connection3.createChannel();
-        channel3.queueDeclare(QUEUE_NAME3,false,false,false,null);
 
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String receivedMessage = new String(delivery.getBody(),"UTF-8");
-            userLabel1.setText("User 1: "+receivedMessage);
-            System.out.println(" User 1 sent '"+receivedMessage+" '");
+          area.setText(receivedMessage);
+            System.out.println(" [x] sent '"+receivedMessage+" '");
 
         };
-        channel.basicConsume(QUEUE_NAME1,true,deliverCallback,consumerTag -> {});
-
-        DeliverCallback deliverCallback2 = (consumerTag, delivery) -> {
-            String receivedMessage = new String(delivery.getBody(),"UTF-8");
-            userLabel2.setText("User 2: "+receivedMessage);
-            System.out.println(" User 2 sent '"+receivedMessage+" '");
-
-        };
-        channel.basicConsume(QUEUE_NAME2,true,deliverCallback2,consumerTag -> {});
-
-
-        DeliverCallback deliverCallback3 = (consumerTag, delivery) -> {
-            String receivedMessage = new String(delivery.getBody(),"UTF-8");
-            userLabel3.setText("User 3: "+receivedMessage);
-            System.out.println(" User 3 sent '"+receivedMessage+" '");
-
-        };
-        channel.basicConsume(QUEUE_NAME3,true,deliverCallback3,consumerTag -> {});
+        channel.basicConsume(QUEUE_NAME,true,deliverCallback,consumerTag -> {});
     }
 }

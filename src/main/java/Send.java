@@ -15,9 +15,6 @@ public class Send {
         this.queueName = queueName;
     }
 
-//    public static void main(String[] args) {
-//        sendMessage();
-//    }
 
     public void sendMessage() {
         ConnectionFactory connectionFactory = new ConnectionFactory();
