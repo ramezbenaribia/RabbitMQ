@@ -18,12 +18,12 @@ public class UserReceiver {
         JPanel jPanel = new JPanel();
         jPanel.setBorder(new TitledBorder(new EtchedBorder(), "Receiver"));
         jPanel.setBounds(10,30,800,600);
-        JFrame f= new JFrame("Final Text");
+        JFrame f= new JFrame("Receiver Text");
 
 
 
         JTextArea area=new JTextArea(20,20);
-        Font fieldFont = new Font("Arial", Font.PLAIN, 20);
+        Font fieldFont = new Font("Arial", Font.PLAIN, 18);
         area.setFont(fieldFont);
         area.setBorder(BorderFactory.createCompoundBorder(
                 new CustomeBorder(),

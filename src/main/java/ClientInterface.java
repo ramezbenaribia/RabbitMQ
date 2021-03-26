@@ -28,19 +28,6 @@ public class ClientInterface implements DocumentListener, KeyListener {
     float b = rand.nextFloat();
     Color randomColor = new Color(r, g, b);
 
-    private void appendToPane(JTextPane tp, String msg, Color c)
-    {
-        StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int len = tp.getDocument().getLength();
-        tp.setCaretPosition(len);
-        tp.setCharacterAttributes(aset, false);
-        tp.replaceSelection(msg);
-    }
 
 
     ClientInterface(int user_id, String queueName) throws IOException, TimeoutException {
@@ -53,7 +40,6 @@ public class ClientInterface implements DocumentListener, KeyListener {
         JFrame f= new JFrame("Text Editor of the user"+ user_id);
 
 
-        // USER A
         JTextArea area=new JTextArea(20,20);
         Font fieldFont = new Font("Arial", Font.PLAIN, 20);
         area.setFont(fieldFont);
@@ -71,10 +57,9 @@ public class ClientInterface implements DocumentListener, KeyListener {
 
         JScrollPane scroll = new JScrollPane(area);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setBounds(10, 11, 455, 249);
+        scroll.setBounds(10, 11, 700, 249);
 
 
-        // Listening to other queue
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("localhost");
 
@@ -89,7 +74,7 @@ public class ClientInterface implements DocumentListener, KeyListener {
             this.isTyping = false;
             area.setText(receivedMessage);
             area.setCaretPosition(area.getText().length());
-            System.out.println(" [x] sent '"+receivedMessage+" '");
+            System.out.println(" User"+ user_id +" sent '"+receivedMessage+" '");
 
         };
         channel.basicConsume(queueName,true,deliverCallback,consumerTag -> {});
@@ -107,7 +92,7 @@ public class ClientInterface implements DocumentListener, KeyListener {
     @Override
     public void insertUpdate(DocumentEvent e) {
         try {
-            System.out.println("USER"+ this.user_id +"TYPING");
+            System.out.println("User"+ this.user_id +" IS TYPING");
             if(this.isTyping) {
                 String text = e.getDocument().getText(0,e.getDocument().getLength());
                 Send sender = new Send(text,queueName);
